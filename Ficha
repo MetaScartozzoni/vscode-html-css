@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>📸 Ficha de Atendimento - V3 Final</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f1a2b;
+      padding: 20px;
+      color: white;
+    }
+    h1 {
+      text-align: center;
+      color: white;
+      font-weight: 300;
+    }
+    fieldset {
+      border: 1px solid #444;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      padding: 16px;
+      background: #1c2b3a;
+    }
+    legend {
+      font-weight: bold;
+      color: #ffd700;
+      padding: 0 10px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 300;
+      color: white;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #c0a060;
+      margin-top: 4px;
+      font-size: 14px;
+      background: #f2f2f2;
+      color: black;
+    }
+    input:read-only {
+      background: #e0e0e0;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+    }
+    .row > div {
+      flex: 1;
+    }
+    .btn {
+      padding: 10px 16px;
+      background: #e07a2d;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      background: #d46c1e;
+    }
+    .btn.secondary {
+      background: #8a8a8a;
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .foto-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .foto-preview canvas {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: crosshair;
+    }
+    .color-picker {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+    }
+    .color-option {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 0 2px #000;
+    }
+    .retorno-bloco {
+      border: 1px dashed #ccc;
+      padding: 12px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      background: #182635;
+    }
+    .assinatura {
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📸 Ficha de Atendimento - V3 Final</h1>
+
+<fieldset>
+  <legend>📌 Dados do Paciente</legend>
+  <label>Nome</label>
+  <input id="nome" type="text" placeholder="Nome completo do paciente">
+
+  <label>Telefone</label>
+  <input id="telefone" type="text" placeholder="5511988887777">
+
+  <label>ID do Paciente</label>
+  <input id="idPaciente" type="text">
+</fieldset>
+
+<fieldset>
+  <legend>📷 Fotos do Atendimento</legend>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>📸 Ficha de Atendimento</title>
+  <style>
+    body { font-family: 'Segoe UI'; background: #0f1a2b; color: #fff; padding: 20px; }
+    h1 { text-align: center; font-weight: 300; }
+    fieldset {
+      border: 1px solid #444; border-radius: 8px;
+      margin-bottom: 20px; padding: 16px; background: #1c2b3a;
+    }
+    legend { font-weight: bold; color: #ffd700; }
+    label { display: block; margin-top: 10px; font-weight: 300; }
+    input, textarea {
+      width: 100%; padding: 8px; border-radius: 6px;
+      border: 1px solid #c0a060; margin-top: 4px; background: #f2f2f2; color: #000;
+    }
+    input:read-only { background: #e0e0e0; }
+    .row { display: flex; gap: 10px; }
+    .row > div { flex: 1; }
+    .btn { padding: 10px 16px; background: #e07a2d; color: white;
+      border: none; border-radius: 6px; cursor: pointer; font-weight: bold;
+    }
+    .btn:hover { background: #d46c1e; }
+    .btn-group { margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .foto-preview { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; }
+    canvas { border: 1px solid #ccc; border-radius: 4px; background: #fff; }
+    .color-picker { display: flex; gap: 8px; margin-top: 8px; }
+    .color-option {
+      width: 20px; height: 20px; border-radius: 50%; cursor: pointer;
+      border: 2px solid #fff; box-shadow: 0 0 2px #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>📋 Ficha de Atendimento</h1>
+
+  <fieldset>
+    <legend>🧍 Dados do Paciente</legend>
+    <label>Nome</label>
+    <input id="nome" type="text">
+    <label>Telefone</label>
+    <input id="telefone" type="text">
+    <label>ID do Paciente</label>
+    <input id="idPaciente" type="text">
+  </fieldset>
+
+  <fieldset>
+    <legend>📷 Fotos e Anotações</legend>
+    <div class="btn-group">
+      <button class="btn" onclick="abrirCamera()">📷 Tirar Foto Agora</button>
+      <input type="file" accept="image/*" onchange="carregarFoto(this)" class="btn secondary">
+      <button class="btn" onclick="abrirExames()">🧪 Ver Exames</button>
+      <button class="btn" onclick="abrirProntuario()">📂 Ver Prontuário</button>
+    </div>
+    <div class="foto-preview">
+      <canvas id="canvasFoto" width="300" height="300"></canvas>
+    </div>
+    <div class="color-picker">
+      <div class="color-option" style="background: yellow" onclick="selecionarCor('yellow')"></div>
+      <div class="color-option" style="background: red" onclick="selecionarCor('red')"></div>
+      <div class="color-option" style="background: blue" onclick="selecionarCor('blue')"></div>
+      <div class="color-option" style="background: black" onclick="selecionarCor('black')"></div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>📋 Dados Clínicos</legend>
+    <label>Queixa Principal</label>
+    <textarea id="queixa"></textarea>
+    <label>Motivo da Cirurgia</label>
+    <textarea id="motivo"></textarea>
+    <label>Expectativa da Paciente</label>
+    <textarea id="expectativa"></textarea>
+    <label>Indicação Cirúrgica</label>
+    <textarea id="indicacao"></textarea>
+    <label>HDP / Evolução</label>
+    <textarea id="evolucao"></textarea>
+    <label>Hipótese Diagnóstica</label>
+    <textarea id="hipotese"></textarea>
+    <label>Observações Clínicas</label>
+    <textarea id="observacoes"></textarea>
+    <div class="row">
+      <div><label>Peso (kg)</label><input id="peso" type="number" oninput="calcularIMC()"></div>
+      <div><label>Altura (cm)</label><input id="altura" type="number" oninput="calcularIMC()"></div>
+      <div><label>IMC</label><input id="imc" type="text" readonly></div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>📅 Blocos de Retorno</legend>
+    <div id="blocosRetorno"></div>
+    <button class="btn secondary" onclick="adicionarBlocoRetorno()">➕ Adicionar Retorno</button>
+    <button class="btn secondary" onclick="carregarUltimaFicha()">📖 Ver Última Ficha</button>
+    <button class="btn secondary" onclick="gerarPdfUltimaFicha()">📄 Gerar PDF da Última Ficha</button>
+  </fieldset>
+
+  <div class="btn-group">
+    <button class="btn" onclick="salvarFichaAtendimento()">💾 Salvar Ficha</button>
+    <button class="btn" onclick="salvarFotosDesenhadas()">🖼️ Salvar Anotações</button>
+    <button class="btn" onclick="abrirPainelOrcamento()">📊 Gerar Orçamento</button>
+    <button class="btn" onclick="gerarPdfFichaAtendimento()">📄 Gerar PDF da Ficha</button>
+  </div>
+
+  <video id="video" autoplay style="display:none;"></video>
+
+  <script>
+    function calcularIMC() {
+      const peso = parseFloat(document.getElementById('peso').value);
+      const altura = parseFloat(document.getElementById('altura').value);
+      if (peso && altura) {
+        const imc = peso / ((altura / 100) ** 2);
+        document.getElementById('imc').value = imc.toFixed(2);
+      }
+    }
+
+    function abrirCamera() {
+      alert('📸 Captura de foto ainda será implementada com WebRTC ou módulo externo.');
+    }
+
+    function carregarFoto(input) {
+      const canvas = document.getElementById("canvasFoto");
+      const ctx = canvas.getContext("2d");
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function selecionarCor(cor) {
+      const canvas = document.getElementById("canvasFoto");
+      const ctx = canvas.getContext("2d");
+      ctx.strokeStyle = cor;
+    }
+
+    function abrirExames() {
+      alert("🔬 Exames serão integrados em breve.");
+    }
+
+    function abrirProntuario() {
+      alert("📁 Prontuário será exibido por painel externo.");
+    }
+
+    function salvarFichaAtendimento() {
+      const dados = {
+        idPaciente: document.getElementById("idPaciente").value,
+        nome: document.getElementById("nome").value,
+        telefone: document.getElementById("telefone").value,
+        peso: document.getElementById("peso").value,
+        altura: document.getElementById("altura").value,
+        imc: document.getElementById("imc").value,
+        queixa: document.getElementById("queixa").value,
+        expectativa: document.getElementById("expectativa").value,
+        motivo: document.getElementById("motivo").value,
+        indicacao: document.getElementById("indicacao").value,
+        evolucao: document.getElementById("evolucao").value,
+        observacoes: document.getElementById("observacoes").value
+      };
+
+      google.script.run
+        .withSuccessHandler(() => alert("✅ Ficha salva com sucesso!"))
+        .withFailureHandler(e => alert("❌ Erro ao salvar: " + e.message))
+        .salvarFichaAtendimento(dados);
+    }
+
+    function salvarFotosDesenhadas() {
+      const canvas = document.getElementById("canvasFoto");
+      const base64 = canvas.toDataURL("image/png");
+      const telefone = document.getElementById("telefone").value;
+      const nome = document.getElementById("nome").value;
+      const id = document.getElementById("idPaciente").value;
+
+      google.script.run
+        .withSuccessHandler(() => alert("✅ Anotação salva no Drive."))
+        .withFailureHandler(e => alert("❌ Erro: " + e.message))
+        .salvarAnotacaoFoto(id, telefone, base64);
+    }
+
+    function carregarUltimaFicha() {
+      const tel = document.getElementById('telefone').value;
+      if (!tel) return alert("📞 Informe o telefone antes!");
+
+      google.script.run
+        .withSuccessHandler(popularCamposFicha)
+        .withFailureHandler(e => alert("❌ Erro ao buscar ficha: " + e.message))
+        .buscarUltimaFicha(tel);
+    }
+
+    function popularCamposFicha(ficha) {
+      if (!ficha) {
+        alert("⚠️ Nenhuma ficha anterior encontrada.");
+        return;
+      }
+
+      document.getElementById('idPaciente').value = ficha.idPaciente;
+      document.getElementById('nome').value = ficha.nome;
+      document.getElementById('peso').value = ficha.peso;
+      document.getElementById('altura').value = ficha.altura;
+      document.getElementById('imc').value = ficha.imc;
+      document.getElementById('queixa').value = ficha.queixa;
+      document.getElementById('expectativa').value = ficha.expectativa;
+      document.getElementById('motivo').value = ficha.motivo;
+      document.getElementById('indicacao').value = ficha.indicacao;
+      document.getElementById('evolucao').value = ficha.evolucao;
+      document.getElementById('hipotese').value = ficha.hipotese;
+      document.getElementById('observacoes').value = ficha.observacoes;
+
+      alert("📄 Ficha carregada!");
+    }
+
+    function gerarPdfFichaAtendimento() {
+      const id = document.getElementById("idPaciente").value.trim();
+      const tel = document.getElementById("telefone").value.trim();
+
+      if (id) {
+        // Prioriza ID se disponível
+        google.script.run
+          .withSuccessHandler(link => {
+            if (link && link.startsWith("http")) {
+              window.open(link, '_blank');
+            } else {
+              alert("❌ Erro ao gerar PDF por ID.");
+            }
+          })
+          .withFailureHandler(e => alert("❌ Erro: " + e.message))
+          .gerarPdfFichaAtendimento(id);
+      } else if (tel) {
+        // Fallback para telefone
+        google.script.run
+          .withSuccessHandler(link => {
+            if (link && link.startsWith("http")) {
+              window.open(link, '_blank');
+            } else {
+              alert("❌ Erro ao gerar PDF por telefone.");
+            }
+          })
+          .withFailureHandler(e => alert("❌ Erro: " + e.message))
+          .gerarPdfFichaAtendimentoPorTelefone(tel);
+      } else {
+        alert("⚠️ Informe o ID ou Telefone do paciente.");
+      }
+    }
+
+
+
+    function abrirPainelOrcamento() {
+      const id = document.getElementById("idPaciente").value;
+      const nome = document.getElementById("nome").value;
+      const tel = document.getElementById("telefone").value;
+      window.open(`https://script.google.com/macros/s/AKfycbx.../exec?id=${id}&nome=${nome}&telefone=${tel}`, '_blank');
+    }
+
+      <button class="btn" onclick="abrirPainelOrcamento()">📊 Painel Orçamento</button>
+      <button class="btn secondary" onclick="abrirFormularioJotform()">📝 Enviar Jotform</button>
+      </div>
+
+      <video id="video" autoplay style="display:none;"></video>
+
+    // ... [Funções JS já existentes aqui serão mantidas e incrementadas com salvarBlocosRetorno()] ...
+  </script>
+
+</body>
+</html>
