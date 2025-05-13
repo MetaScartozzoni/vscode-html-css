@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Painel de Negociação</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+      .panel-container {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+      .info {
+        flex: 1;
+        background: #f5f5f5;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        min-width: 300px;
+      }
+      .info h2 {
+        margin-top: 0;
+      }
+      .info p {
+        margin: 8px 0;
+      }
+      .campo {
+        margin-top: 20px;
+      }
+      label {
+        font-weight: bold;
+      }
+      textarea,
+      input[type="text"],
+      input[type="date"],
+      input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+      .btn {
+        margin-top: 15px;
+        padding: 10px 20px;
+        background: #4b3621;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .busca {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 8px;
+      }
+      .busca select,
+      .busca input {
+        flex: 1;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #aaa;
+      }
+      .busca button {
+        padding: 8px 16px;
+        background: #4b3621;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .chat {
+        flex: 1;
+        min-height: 700px;
+        min-width: 300px;
+      }
+      .chat iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+      /* Dashboard de Follow Up */
+      .dashboard {
+        background: #e8e8e8;
+        padding: 15px;
+        border-radius: 8px;
+      }
+      .dashboard h3 {
+        margin-top: 0;
+      }
+      .followup-item {
+        background: #fff;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+      .followup-item button {
+        margin-right: 5px;
+        padding: 5px 10px;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel-container">
+      <div class="info">
+        <div class="busca">
+          <select id="campoBusca">
+            <option value="">Selecione um paciente</option>
+          </select>
+          <input id="busca-termo" placeholder="Digite Nome, ID ou Telefone" />
+          <button id="btn-buscar" class="btn">🔍 Buscar</button>
+        </div>
+
+        <h2>📝 Dados do Orçamento</h2>
+        <p><strong>ID:</strong> <span id="orc-id">--</span></p>
+        <p><strong>Nome:</strong> <span id="orc-nome">--</span></p>
+        <p><strong>Tipo:</strong> <span id="orc-tipo">--</span></p>
+        <p><strong>Valor Total:</strong> R$ <span id="orc-total">--</span></p>
+        <p>
+          <strong>Valor Clínica:</strong> R$ <span id="orc-clinica">--</span>
+        </p>
+        <p>
+          <strong>Telefone:</strong>
+          <a id="orc-whatsapp" href="#" target="_blank">--</a>
+        </p>
+
+        <div class="campo">
+          <label>Observações</label>
+          <textarea id="campo-observacao"></textarea>
+        </div>
+        <div class="campo">
+          <label>Resposta</label>
+          <textarea id="campo-resposta"></textarea>
+        </div>
+        <div class="campo">
+          <button id="btn-salvar" class="btn">💾 Salvar</button>
+          <button id="btn-limpar" class="btn">Limpar</button>
+        </div>
+        <div class="campo">
+          <button id="btn-followup" class="btn">Follow Up Dashboard</button>
+        </div>
+      </div>
+
+      <div class="chat">
+        <iframe
+          src="https://tawk.to/chat/6802893c1140b51908c707eb/1ip4ug5r7"
+          allow="microphone; camera"
+        ></iframe>
+      </div>
+    </div>
+
+    <!-- Dashboard de Follow Up -->
+    <div id="dashboardFollowUp" class="dashboard" style="display: none">
+      <h3>Dashboard de Follow Up</h3>
+      <div id="listaFollowUp"></div>
+    </div>
+
+    <script>
+      const isAppsScript = !!(
+        window.google &&
+        google.script &&
+        google.script.run
+      );
+      if (!isAppsScript) console.warn("Modo simulado");
+
+      function callServer(method, args, onSuccess, onFailure) {
+        if (isAppsScript) {
+          let runner = google.script.run.withSuccessHandler(onSuccess);
+          if (onFailure) runner = runner.withFailureHandler(onFailure);
+          runner[method](...args);
+        } else {
+          console.warn("Chamada simulada:", method, args);
+          onSuccess(null);
+        }
+      }
+
+      let orcamentoAtual = null;
+      const el = (id) => document.getElementById(id);
+
+      // Preenche o dropdown com os nomes dos pacientes da aba Negociacoes
+      function preencherDropdown() {
+        callServer("getNomesNegociacoes", [], (nomes) => {
+          const sel = el("campoBusca");
+          if (!Array.isArray(nomes)) return;
+          sel.innerHTML = '<option value="">Selecione um paciente</option>';
+          nomes.forEach((nome) => {
+            const opt = document.createElement("option");
+            opt.value = nome;
+            opt.textContent = nome;
+            sel.appendChild(opt);
+          });
+        });
+      }
+
+      function preencherPainel(dados) {
+        if (!dados) return alert("❌ Orçamento não encontrado.");
+        orcamentoAtual = dados;
+        el("orc-id").textContent = dados.ID_Orcamento;
+        el("orc-nome").textContent = dados.Nome;
+        el("orc-tipo").textContent = dados.Tipo;
+        el("orc-total").textContent = dados.Valor_Total;
+        el("orc-clinica").textContent = dados.ValorClinica;
+        el("orc-whatsapp").href = `https://wa.me/${dados.Telefone}`;
+        el("campo-observacao").value = dados.Observacao || "";
+        el("campo-resposta").value = dados.Resposta || "";
+      }
+
+      function buscarNegociacao() {
+        const termo = el("campoBusca").value || el("busca-termo").value.trim();
+        if (!termo) return alert("❌ Informe um paciente ou termo de busca.");
+        callServer("buscarOrcamento", [termo], preencherPainel, (e) =>
+          alert("❌ Erro na busca: " + e.message),
+        );
+      }
+
+      function salvarCampos() {
+        if (!orcamentoAtual) return alert("❌ Nenhum orçamento carregado!");
+        const payload = {
+          id: orcamentoAtual.ID_Orcamento,
+          nome: orcamentoAtual.Nome,
+          telefone: orcamentoAtual.Telefone,
+          email: orcamentoAtual.Email || "",
+          tipo: orcamentoAtual.Tipo,
+          obs: el("campo-observacao").value,
+          resposta: el("campo-resposta").value,
+        };
+        callServer(
+          "salvarNegociacaoCompleta",
+          [payload],
+          () => alert("💾 Informações salvas!"),
+          (e) => alert("❌ Erro ao salvar: " + e.message),
+        );
+      }
+
+      function limparCampos() {
+        orcamentoAtual = null;
+        el("orc-id").textContent = "--";
+        el("orc-nome").textContent = "--";
+        el("orc-tipo").textContent = "--";
+        el("orc-total").textContent = "--";
+        el("orc-clinica").textContent = "--";
+        el("orc-whatsapp").href = "#";
+        el("campo-observacao").value = "";
+        el("campo-resposta").value = "";
+      }
+
+      // Função para carregar o dashboard de Follow Up
+      function carregarFollowUps() {
+        callServer("getFollowUps", [], (lista) => {
+          const container = el("listaFollowUp");
+          container.innerHTML = "";
+          if (Array.isArray(lista) && lista.length > 0) {
+            lista.forEach((item) => {
+              const div = document.createElement("div");
+              div.className = "followup-item";
+              div.innerHTML = `
+                <p><strong>Nome:</strong> ${item.Nome}</p>
+                <p><strong>Data de Orçamento:</strong> ${item.DataOrcamento}</p>
+                <p><strong>Valor Clínica:</strong> ${item.ValorClinica}</p>
+                <p><strong>Valor Total:</strong> ${item.ValorTotal}</p>
+                <button onclick="aceitarFollowUp('${item.ID}')">Aceite</button>
+                <button onclick="negociarFollowUp('${item.ID}')">Negociar</button>
+                <button onclick="finalizarFollowUp('${item.ID}')">Finalizar</button>
+              `;
+              container.appendChild(div);
+            });
+          } else {
+            container.innerHTML = "<p>Nenhum follow up registrado.</p>";
+          }
+        });
+      }
+
+      // Ações do dashboard de Follow Up
+      function aceitarFollowUp(id) {
+        callServer(
+          "aceitarFollowUp",
+          [id],
+          () => {
+            alert("Follow Up aceito!");
+            carregarFollowUps();
+          },
+          (e) => alert("Erro ao aceitar: " + e.message),
+        );
+      }
+
+      function negociarFollowUp(id) {
+        callServer(
+          "getFollowUpPorId",
+          [id],
+          (dados) => {
+            if (dados) {
+              preencherPainel(dados);
+              alert("Dados carregados para negociação.");
+            } else {
+              alert("Follow Up não encontrado.");
+            }
+          },
+          (e) => alert("Erro ao carregar Follow Up: " + e.message),
+        );
+      }
+
+      function finalizarFollowUp(id) {
+        callServer(
+          "finalizarFollowUp",
+          [id],
+          () => {
+            alert("Follow Up finalizado!");
+            carregarFollowUps();
+          },
+          (e) => alert("Erro ao finalizar: " + e.message),
+        );
+      }
+
+      // Toggle visibilidade do dashboard
+      function toggleDashboard() {
+        const dash = el("dashboardFollowUp");
+        if (dash.style.display === "none" || dash.style.display === "") {
+          dash.style.display = "block";
+          carregarFollowUps();
+        } else {
+          dash.style.display = "none";
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        preencherDropdown();
+        el("btn-buscar").addEventListener("click", buscarNegociacao);
+        el("btn-salvar").addEventListener("click", salvarCampos);
+        el("btn-limpar").addEventListener("click", limparCampos);
+        el("btn-followup").addEventListener("click", toggleDashboard);
+      });
+    </script>
+  </body>
+</html>
